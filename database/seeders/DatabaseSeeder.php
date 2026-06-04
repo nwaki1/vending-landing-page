@@ -17,7 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         User::firstOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User', 'password' => bcrypt('password')],
+            ['name' => 'Test User', 'password' => bcrypt('password'), 'is_admin' => false],
+        );
+
+        User::firstOrCreate(
+            ['email' => 'admin@vendosmart.co.id'],
+            ['name' => 'Admin VendoSmart', 'password' => bcrypt('admin123'), 'is_admin' => true],
         );
 
         $this->call(ProductSeeder::class);

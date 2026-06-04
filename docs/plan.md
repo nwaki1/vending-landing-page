@@ -135,7 +135,7 @@ UI sudah selesai di Phase 1. Phase ini fokus ke backend dan peningkatan UX.
 - [x] Honeypot field `website` (hidden, bot isi — manusia tidak).
 - [x] Rate limiting `throttle:5,1` pada route POST konsultasi.
 
-### Phase 4: CMS / Admin
+### Phase 4: CMS / Admin ✅
 
 Prasyarat: autentikasi admin harus ada (Laravel Breeze atau guard terpisah).
 

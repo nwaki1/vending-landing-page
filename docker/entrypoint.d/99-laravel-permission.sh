@@ -42,4 +42,9 @@ if [ -f "artisan" ] && [ -f "composer.json" ]; then
     fi
 
     php artisan migrate --force --no-interaction --ansi
+
+    # Storage symlink untuk upload file
+    if [ ! -L "$APP_DIR/public/storage" ]; then
+        php artisan storage:link --force --ansi
+    fi
 fi
