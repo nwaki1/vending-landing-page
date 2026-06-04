@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT:-8000}:8080"
+    volumes:
+      - .:/var/www/html
+    environment:
+      PHP_OPCACHE_ENABLE: 0
+      TMPDIR: /var/www/html/storage/tmp
