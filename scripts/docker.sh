@@ -12,7 +12,8 @@ show_menu() {
     printf '4) Clean\n'
     printf '5) Database backup / restore\n'
     printf '6) Migrate & Seed\n'
-    printf '7) Exit\n'
+    printf '7) Deploy\n'
+    printf '8) Exit\n'
 }
 
 run_action() {
@@ -72,7 +73,11 @@ run_action() {
                 *) log_error "Pilihan tidak valid" ;;
             esac
             ;;
-        7|exit|"")
+        7|deploy)
+            log_info "Deploying to VPS..."
+            bash "$SCRIPT_DIR/deploy.sh"
+            ;;
+        8|exit|"")
             log_info "Bye"
             ;;
         *)
@@ -88,5 +93,5 @@ if [[ $# -gt 0 ]]; then
 fi
 
 show_menu
-read -r -p "Choose [1-7]: " choice
+read -r -p "Choose [1-8]: " choice
 run_action "$choice"

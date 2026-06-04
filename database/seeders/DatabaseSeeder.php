@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Test User', 'password' => bcrypt('password'), 'is_admin' => false],
         );
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@vendosmart.co.id'],
             ['name' => 'Admin VendoSmart', 'password' => bcrypt('admin123'), 'is_admin' => true],
         );
