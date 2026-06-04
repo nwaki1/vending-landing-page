@@ -75,50 +75,116 @@ Dokumen ini merangkum scope kerja untuk membangun landing page company + CMS/adm
 
 ## Rencana Implementasi
 
-### Phase 1: Company Landing Page
+### Phase 1: Company Landing Page ✅
 
-- Susun layout landing page utama.
-- Tampilkan branding dan CTA utama.
-- Buat section keunggulan dan ringkasan produk.
+- [x] Susun layout landing page utama (Navbar, Hero, Stats, Footer).
+- [x] Tampilkan branding dan CTA utama (Beli Sekarang / Sewa Unit).
+- [x] Buat section keunggulan (6 poin).
+- [x] Buat ringkasan produk (3 product cards placeholder).
+- [x] Buat section CTA konsultasi dengan form UI (belum functional).
+- [x] Tambahkan tombol WhatsApp di footer.
+- [x] Setup `HomeController` dan route `/`.
 
-### Phase 2: Katalog dan Perbandingan
+### Phase 2: Katalog Produk & Perbandingan
 
-- Buat list produk vending machine.
-- Tambahkan filter kategori.
-- Tambahkan blok perbandingan spesifikasi.
+Prasyarat: model `Product` dan migration harus ada sebelum phase ini.
 
-### Phase 3: Lead Generation
+**Database:**
+- Migration tabel `products`: `name`, `slug`, `category`, `description`, `price`, `specs` (JSON), `image`, `status` (`available`/`indent`/`unavailable`), `is_featured`, `timestamps`.
+- Model `Product` + seeder data contoh (min. 6 produk, 3 kategori).
 
-- Tambahkan tombol WhatsApp.
-- Tambahkan form konsultasi.
-- Tambahkan CTA `Mulai Sekarang`.
+**Halaman `/katalog`:**
+- Route `GET /katalog` → `CatalogController@index`.
+- Tampilkan semua produk dari database.
+- Filter kategori via query string `?category=snack` (tanpa reload halaman, pakai Alpine.js atau JS vanilla).
+- Card produk: foto, nama, kategori, harga, spesifikasi ringkas, tombol "Detail" dan "Tanya Harga".
+
+**Halaman `/katalog/{slug}`:**
+- Route `GET /katalog/{product:slug}` → `CatalogController@show`.
+- Detail produk lengkap: galeri foto, spesifikasi penuh, CTA konsultasi.
+
+**Blok perbandingan spesifikasi:**
+- Tambahkan section di halaman katalog atau landing page.
+- User bisa pilih 2–3 produk untuk dibandingkan side-by-side (tabel spesifikasi).
+- Implementasi dengan JS (state pilihan produk di frontend, tabel render dinamis).
+
+**Integrasi landing page:**
+- Update section ringkasan produk di `welcome.blade.php` agar data diambil dari database (`Product::featured()`).
+- Tombol "Lihat Semua Produk" mengarah ke `/katalog`.
+
+### Phase 3: Lead Generation (Backend)
+
+UI sudah selesai di Phase 1. Phase ini fokus ke backend dan peningkatan UX.
+
+**Database:**
+- Migration tabel `leads`: `name`, `whatsapp`, `email` (nullable), `need` (enum: `beli/sewa/info/service`), `message`, `source` (default: `landing_page`), `status` (enum: `new/contacted/closed`), `timestamps`.
+- Model `Lead`.
+
+**Backend form konsultasi:**
+- Route `POST /konsultasi` → `LeadController@store`.
+- Validasi server-side (name required, whatsapp required & format valid, need required).
+- Simpan lead ke tabel `leads`.
+- Redirect back dengan flash message sukses/gagal.
+- Update form di `welcome.blade.php` agar `action` mengarah ke route POST.
+
+**WhatsApp floating button:**
+- Tambahkan tombol WhatsApp floating di kanan bawah semua halaman (fixed position).
+- Muncul setelah scroll 300px dari atas.
+
+**Anti-spam:**
+- Tambahkan honeypot field atau rate limiting (`throttle:5,1`) pada route POST konsultasi.
 
 ### Phase 4: CMS / Admin
 
-- Buat halaman admin untuk CRUD produk.
-- Buat halaman admin untuk banner.
-- Buat halaman admin untuk artikel dan testimoni.
-- Buat halaman admin untuk melihat leads.
+Prasyarat: autentikasi admin harus ada (Laravel Breeze atau guard terpisah).
+
+**Autentikasi:**
+- Setup Laravel Breeze atau guard `admin` tersendiri.
+- Proteksi semua route `/admin/*` dengan middleware `auth` + role check.
+
+**Dashboard:**
+- Halaman `/admin` — ringkasan: total produk, total leads baru, leads bulan ini.
+
+**Kelola Produk (`/admin/products`):**
+- CRUD lengkap: list, create, edit, delete.
+- Upload foto produk (storage disk `public`).
+- Toggle status `is_featured` untuk produk yang tampil di landing page.
+
+**Kelola Leads (`/admin/leads`):**
+- List semua leads dengan filter status (`new/contacted/closed`).
+- Update status lead.
+- Tombol quick-reply WhatsApp langsung dari tabel.
+- Export ke CSV.
+
+**Kelola Banner (`/admin/banners`):**
+- CRUD banner untuk hero section (judul, subjudul, CTA, gambar, urutan tampil).
+
+**Kelola Testimoni (`/admin/testimonials`):**
+- CRUD testimoni customer (nama, foto, rating, isi teks, status publish).
+
+**Kelola Artikel (`/admin/articles`):**
+- CRUD artikel edukasi dengan editor teks sederhana.
 
 ## Prioritas MVP
 
-1. Hero section
-2. Branding dan CTA beli/sewa
-3. Keunggulan
-4. Katalog produk
-5. Tombol WhatsApp
-6. Form konsultasi
-7. Dashboard admin dasar untuk produk dan leads
+1. Hero section + branding + CTA beli/sewa ✅
+2. Keunggulan ✅
+3. Ringkasan produk (UI placeholder) ✅
+4. Form konsultasi UI ✅ / backend _(Phase 3)_
+5. Tombol WhatsApp ✅ / floating button _(Phase 3)_
+6. Katalog produk lengkap + filter _(Phase 2)_
+7. Dashboard admin dasar untuk produk dan leads _(Phase 4)_
 
 ## Output Yang Diharapkan
 
 - Landing page siap pakai untuk company profile.
 - Katalog vending machine bisa difilter dan dibandingkan.
-- Channel lead generation aktif.
-- Admin panel minimal untuk mengelola data penting.
+- Channel lead generation aktif (form tersimpan ke DB + WhatsApp).
+- Admin panel minimal untuk mengelola produk, leads, dan konten.
 
 ## Catatan
 
 - Fokus awal adalah conversion dan kejelasan informasi.
 - CMS/admin bisa dikembangkan bertahap setelah MVP stabil.
-- Struktur data perlu disiapkan supaya konten mudah dikelola dari admin.
+- Struktur data (`products`, `leads`) harus disiapkan di Phase 2–3 agar Phase 4 bisa langsung CRUD tanpa migrasi ulang.
+- Semua konten teks (brand, harga, kontak) di Phase 1 bersifat placeholder — bisa diupdate langsung di `welcome.blade.php` atau setelah CMS admin siap.
