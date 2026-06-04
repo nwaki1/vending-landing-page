@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+
 class HomeController extends Controller
 {
     public function index()
     {
-        return view('welcome');
+        $featuredProducts = Product::featured()->orderBy('name')->get();
+
+        return view('welcome', compact('featuredProducts'));
     }
 }

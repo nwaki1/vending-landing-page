@@ -42,7 +42,7 @@
 
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#keunggulan" class="text-gray-600 hover:text-blue-900 text-sm font-medium transition-colors">Keunggulan</a>
-                    <a href="#produk"     class="text-gray-600 hover:text-blue-900 text-sm font-medium transition-colors">Produk</a>
+                    <a href="{{ route('catalog.index') }}" class="text-gray-600 hover:text-blue-900 text-sm font-medium transition-colors">Katalog</a>
                     <a href="#kontak"     class="text-gray-600 hover:text-blue-900 text-sm font-medium transition-colors">Kontak</a>
                     <a href="#konsultasi" class="bg-blue-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-800 transition-colors shadow-sm">
                         Konsultasi Gratis
@@ -59,7 +59,7 @@
 
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
             <a href="#keunggulan" class="block py-2 text-sm text-gray-600 hover:text-blue-900 font-medium">Keunggulan</a>
-            <a href="#produk"     class="block py-2 text-sm text-gray-600 hover:text-blue-900 font-medium">Produk</a>
+            <a href="{{ route('catalog.index') }}" class="block py-2 text-sm text-gray-600 hover:text-blue-900 font-medium">Katalog</a>
             <a href="#kontak"     class="block py-2 text-sm text-gray-600 hover:text-blue-900 font-medium">Kontak</a>
             <a href="#konsultasi" class="block mt-2 bg-blue-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg text-center hover:bg-blue-800 transition-colors">
                 Konsultasi Gratis
@@ -277,7 +277,7 @@
     </section>
 
 
-    {{-- ===================== PRODUK (RINGKASAN) ===================== --}}
+    {{-- ===================== PRODUK (RINGKASAN — dari DB) ===================== --}}
     <section id="produk" class="bg-white py-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -288,51 +288,25 @@
                 </p>
             </div>
 
+            @if ($featuredProducts->isNotEmpty())
             @php
-                $products = [
-                    [
-                        'badge'      => ['Snack & Minuman', 'bg-blue-100 text-blue-800'],
-                        'gradient'   => 'from-blue-50 to-blue-100',
-                        'machineClr' => 'from-blue-600 to-blue-900 border-blue-400',
-                        'name'       => 'VM Combo S-200',
-                        'desc'       => 'Vending machine multifungsi untuk snack dan minuman dingin. Kapasitas 200 slot, pembayaran QRIS & cashless.',
-                        'price'      => 'Rp 45 Juta',
-                        'popular'    => false,
-                    ],
-                    [
-                        'badge'      => ['Kopi & Minuman Panas', 'bg-amber-100 text-amber-800'],
-                        'gradient'   => 'from-amber-50 to-amber-100',
-                        'machineClr' => 'from-amber-600 to-amber-900 border-amber-400',
-                        'name'       => 'VM Kopi Pro K-100',
-                        'desc'       => 'Mesin kopi otomatis dengan 20+ pilihan minuman panas. Cocok untuk kantor, kampus, dan pusat perbelanjaan.',
-                        'price'      => 'Rp 35 Juta',
-                        'popular'    => true,
-                    ],
-                    [
-                        'badge'      => ['ATM Beras', 'bg-green-100 text-green-800'],
-                        'gradient'   => 'from-green-50 to-green-100',
-                        'machineClr' => 'from-green-600 to-green-900 border-green-400',
-                        'name'       => 'VM ATM Beras R-50',
-                        'desc'       => 'Inovasi vending machine beras untuk kebutuhan masyarakat. Sistem timbang digital, harga fleksibel per kilogram.',
-                        'price'      => 'Rp 25 Juta',
-                        'popular'    => false,
-                    ],
+                $colorMap = [
+                    'snack_minuman' => ['bg' => 'from-blue-50 to-blue-100',    'machine' => 'from-blue-600 to-blue-900 border-blue-400',    'badge' => 'bg-blue-100 text-blue-800'],
+                    'kopi_panas'    => ['bg' => 'from-amber-50 to-amber-100',  'machine' => 'from-amber-600 to-amber-900 border-amber-400',  'badge' => 'bg-amber-100 text-amber-800'],
+                    'atm_beras'     => ['bg' => 'from-green-50 to-green-100',  'machine' => 'from-green-600 to-green-900 border-green-400',  'badge' => 'bg-green-100 text-green-800'],
+                    'custom'        => ['bg' => 'from-purple-50 to-purple-100','machine' => 'from-purple-600 to-purple-900 border-purple-400','badge' => 'bg-purple-100 text-purple-800'],
                 ];
             @endphp
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                @foreach ($products as $product)
-                <div class="bg-white border {{ $product['popular'] ? 'border-amber-300 ring-2 ring-amber-200' : 'border-gray-100' }} rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all relative group">
+                @foreach ($featuredProducts as $product)
+                @php $c = $colorMap[$product->category] ?? $colorMap['custom']; @endphp
+                <div class="bg-white border border-amber-200 ring-1 ring-amber-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all relative group">
 
-                    @if ($product['popular'])
-                    <div class="absolute top-4 right-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow">
-                        Terlaris
-                    </div>
-                    @endif
-
-                    {{-- Product visual --}}
-                    <div class="bg-gradient-to-br {{ $product['gradient'] }} h-52 flex items-center justify-center">
-                        <div class="w-28 h-40 bg-gradient-to-b {{ $product['machineClr'] }} rounded-2xl border-2 relative shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <div class="bg-gradient-to-br {{ $c['bg'] }} h-52 flex items-center justify-center relative">
+                        <span class="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">
+                            Unggulan
+                        </span>
+                        <div class="w-28 h-40 bg-gradient-to-b {{ $c['machine'] }} rounded-2xl border-2 relative shadow-lg group-hover:scale-105 transition-transform duration-300">
                             <div class="absolute top-3 left-3 right-3 h-16 bg-white/10 rounded-lg border border-white/20"></div>
                             <div class="absolute bottom-6 left-3 right-3 h-5 bg-white/20 rounded"></div>
                             <div class="absolute bottom-2 left-3 right-3 h-3 bg-white/10 rounded"></div>
@@ -340,29 +314,39 @@
                     </div>
 
                     <div class="p-6">
-                        <span class="inline-block {{ $product['badge'][1] }} text-xs font-semibold px-3 py-1 rounded-full mb-3">
-                            {{ $product['badge'][0] }}
+                        <span class="inline-block {{ $c['badge'] }} text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                            {{ $product->category_label }}
                         </span>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ $product['name'] }}</h3>
-                        <p class="text-gray-500 text-sm mb-5 leading-relaxed">{{ $product['desc'] }}</p>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">{{ $product->name }}</h3>
+                        <p class="text-gray-500 text-sm mb-5 leading-relaxed line-clamp-3">{{ $product->description }}</p>
                         <div class="flex items-center justify-between">
                             <div>
-                                <span class="text-blue-900 font-extrabold text-xl">{{ $product['price'] }}</span>
+                                <span class="text-blue-900 font-extrabold text-xl">{{ $product->formatted_price }}</span>
                                 <span class="text-gray-400 text-xs ml-1">/ unit</span>
                             </div>
-                            <a href="#konsultasi"
-                               class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                                Tanya Harga
-                            </a>
+                            <div class="flex gap-2">
+                                <a href="{{ route('catalog.show', $product->slug) }}"
+                                   class="border border-blue-900 text-blue-900 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors">
+                                    Detail
+                                </a>
+                                <a href="#konsultasi"
+                                   class="bg-blue-900 hover:bg-blue-800 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors">
+                                    Tanya
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
                 @endforeach
             </div>
+            @else
+            {{-- Fallback jika DB belum di-seed --}}
+            <p class="text-center text-gray-400 py-12">Jalankan <code class="bg-gray-100 px-2 py-1 rounded text-sm">php artisan migrate --seed</code> untuk menampilkan produk.</p>
+            @endif
 
             <div class="text-center mt-10">
-                <a href="#konsultasi" class="inline-flex items-center text-blue-900 font-semibold hover:text-blue-700 transition-colors text-sm">
-                    Lihat Semua Produk
+                <a href="{{ route('catalog.index') }}" class="inline-flex items-center text-blue-900 font-semibold hover:text-blue-700 transition-colors text-sm">
+                    Lihat Semua Produk di Katalog
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>

@@ -11,7 +11,8 @@ show_menu() {
     printf '3) Stop\n'
     printf '4) Clean\n'
     printf '5) Database backup / restore\n'
-    printf '6) Exit\n'
+    printf '6) Migrate & Seed\n'
+    printf '7) Exit\n'
 }
 
 run_action() {
@@ -56,7 +57,22 @@ run_action() {
             log_info "Opening database backup / restore menu..."
             bash "$SCRIPT_DIR/database.sh"
             ;;
-        6|exit|"")
+        6|migrate)
+            log_info "Migrate & Seed menu"
+            printf '1) Migrate saja\n'
+            printf '2) Migrate + Seed\n'
+            printf '3) Migrate fresh + Seed (HAPUS SEMUA DATA)\n'
+            printf '4) Kembali\n'
+            read -r -p "Choose [1-4]: " migrate_choice
+            case "$migrate_choice" in
+                1) bash "$SCRIPT_DIR/migrate.sh" ;;
+                2) bash "$SCRIPT_DIR/migrate.sh" --seed ;;
+                3) bash "$SCRIPT_DIR/migrate.sh" --fresh --seed ;;
+                4) log_info "Kembali ke menu utama" ;;
+                *) log_error "Pilihan tidak valid" ;;
+            esac
+            ;;
+        7|exit|"")
             log_info "Bye"
             ;;
         *)
@@ -72,5 +88,5 @@ if [[ $# -gt 0 ]]; then
 fi
 
 show_menu
-read -r -p "Choose [1-6]: " choice
+read -r -p "Choose [1-7]: " choice
 run_action "$choice"
