@@ -2,9 +2,14 @@
 
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LeadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/katalog/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
+
+Route::post('/konsultasi', [LeadController::class, 'store'])
+    ->name('konsultasi.store')
+    ->middleware('throttle:5,1');

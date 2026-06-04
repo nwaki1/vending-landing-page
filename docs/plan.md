@@ -112,27 +112,28 @@ Prasyarat: model `Product` dan migration harus ada sebelum phase ini.
 - Update section ringkasan produk di `welcome.blade.php` agar data diambil dari database (`Product::featured()`).
 - Tombol "Lihat Semua Produk" mengarah ke `/katalog`.
 
-### Phase 3: Lead Generation (Backend)
+### Phase 3: Lead Generation (Backend) ✅
 
 UI sudah selesai di Phase 1. Phase ini fokus ke backend dan peningkatan UX.
 
 **Database:**
-- Migration tabel `leads`: `name`, `whatsapp`, `email` (nullable), `need` (enum: `beli/sewa/info/service`), `message`, `source` (default: `landing_page`), `status` (enum: `new/contacted/closed`), `timestamps`.
-- Model `Lead`.
+- [x] Migration tabel `leads`: `name`, `whatsapp`, `email` (nullable), `need` (enum: `beli/sewa/info/service`), `message`, `source` (default: `landing_page`), `status` (enum: `new/contacted/closed`), `timestamps`.
+- [x] Model `Lead` + accessor `need_label`, `status_label`.
 
 **Backend form konsultasi:**
-- Route `POST /konsultasi` → `LeadController@store`.
-- Validasi server-side (name required, whatsapp required & format valid, need required).
-- Simpan lead ke tabel `leads`.
-- Redirect back dengan flash message sukses/gagal.
-- Update form di `welcome.blade.php` agar `action` mengarah ke route POST.
+- [x] Route `POST /konsultasi` → `LeadController@store`.
+- [x] Validasi server-side (name, whatsapp regex, email, need required).
+- [x] Simpan lead ke tabel `leads`.
+- [x] Redirect back dengan flash message sukses + tampil di form.
+- [x] Form `welcome.blade.php` diupdate: action, `old()`, error display, field email ditambahkan.
 
 **WhatsApp floating button:**
-- Tambahkan tombol WhatsApp floating di kanan bawah semua halaman (fixed position).
-- Muncul setelah scroll 300px dari atas.
+- [x] Tombol floating di kanan bawah semua halaman (`welcome.blade.php` + `layouts/app.blade.php`).
+- [x] Muncul setelah scroll 300px dari atas (JS vanilla).
 
 **Anti-spam:**
-- Tambahkan honeypot field atau rate limiting (`throttle:5,1`) pada route POST konsultasi.
+- [x] Honeypot field `website` (hidden, bot isi — manusia tidak).
+- [x] Rate limiting `throttle:5,1` pada route POST konsultasi.
 
 ### Phase 4: CMS / Admin
 
