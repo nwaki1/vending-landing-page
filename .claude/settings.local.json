@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/**)",
+      "Read(//mnt/**)",
+      "Bash(ssh -V)",
+      "Bash(ssh -v -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 hris-vps@103.134.154.143 true)"
+    ]
+  }
+}

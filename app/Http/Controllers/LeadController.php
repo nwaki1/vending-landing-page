@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         // Honeypot: bot isi field ini, manusia tidak
         if ($request->filled('website')) {
-            return redirect()->back()->with('lead_success', true);
+            return $request->expectsJson()
+                ? response()->json(['success' => true])
+                : redirect()->back()->with('lead_success', true);
         }
 
         $validated = $request->validate([
@@ -40,6 +43,8 @@ class LeadController extends Controller
             'status'   => 'new',
         ]);
 
-        return redirect()->back()->with('lead_success', true);
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : redirect()->back()->with('lead_success', true);
     }
 }

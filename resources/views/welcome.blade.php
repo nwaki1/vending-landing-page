@@ -376,8 +376,7 @@
             <div class="bg-white rounded-2xl p-8 text-left shadow-2xl max-w-2xl mx-auto">
 
                 {{-- Success state --}}
-                @if (session('lead_success'))
-                <div class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                <div id="konsultasi-success" class="{{ session('lead_success') ? 'flex' : 'hidden' }} items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                     <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
@@ -386,9 +385,16 @@
                         <p class="text-green-700 text-xs mt-0.5">Tim kami akan menghubungi Anda dalam 1×24 jam melalui WhatsApp.</p>
                     </div>
                 </div>
-                @endif
 
-                <form action="{{ route('konsultasi.store') }}" method="POST">
+                {{-- General error state --}}
+                <div id="konsultasi-error" class="hidden items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p id="konsultasi-error-msg" class="text-red-700 text-sm">Silakan coba lagi.</p>
+                </div>
+
+                <form id="konsultasi-form" action="{{ route('konsultasi.store') }}" method="POST">
                     @csrf
 
                     {{-- Honeypot: disembunyikan dari manusia, diisi bot --}}
@@ -399,43 +405,39 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}" placeholder="Masukkan nama Anda"
+                            <input id="field-name" type="text" name="name" value="{{ old('name') }}" placeholder="Masukkan nama Anda"
                                    class="w-full border {{ $errors->has('name') ? 'border-red-400 bg-red-50' : 'border-gray-200' }} rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                            @error('name')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <p id="error-name" class="text-red-500 text-xs mt-1 hidden"></p>
+                            @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-medium mb-1.5">Nomor WhatsApp <span class="text-red-500">*</span></label>
-                            <input type="tel" name="whatsapp" value="{{ old('whatsapp') }}" placeholder="08xxxxxxxxxx"
+                            <input id="field-whatsapp" type="tel" name="whatsapp" value="{{ old('whatsapp') }}" placeholder="08xxxxxxxxxx"
                                    class="w-full border {{ $errors->has('whatsapp') ? 'border-red-400 bg-red-50' : 'border-gray-200' }} rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                            @error('whatsapp')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <p id="error-whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
+                            @error('whatsapp')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-medium mb-1.5">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="email@anda.com (opsional)"
+                        <input id="field-email" type="email" name="email" value="{{ old('email') }}" placeholder="email@anda.com (opsional)"
                                class="w-full border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-200' }} rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                        @error('email')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
+                        @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-medium mb-1.5">Kebutuhan Anda <span class="text-red-500">*</span></label>
-                        <select name="need" class="w-full border {{ $errors->has('need') ? 'border-red-400 bg-red-50' : 'border-gray-200' }} rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white">
+                        <select id="field-need" name="need" class="w-full border {{ $errors->has('need') ? 'border-red-400 bg-red-50' : 'border-gray-200' }} rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white">
                             <option value="">Pilih jenis kebutuhan</option>
                             <option value="beli"    {{ old('need') === 'beli'    ? 'selected' : '' }}>Beli Unit Baru</option>
                             <option value="sewa"    {{ old('need') === 'sewa'    ? 'selected' : '' }}>Sewa Unit</option>
                             <option value="info"    {{ old('need') === 'info'    ? 'selected' : '' }}>Informasi Produk</option>
                             <option value="service" {{ old('need') === 'service' ? 'selected' : '' }}>Servis / Perawatan</option>
                         </select>
-                        @error('need')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <p id="error-need" class="text-red-500 text-xs mt-1 hidden"></p>
+                        @error('need')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div class="mb-6">
@@ -444,9 +446,13 @@
                                   class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none">{{ old('message') }}</textarea>
                     </div>
 
-                    <button type="submit"
-                            class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3.5 rounded-xl transition-colors text-base shadow-sm">
-                        Kirim & Konsultasi Gratis
+                    <button id="konsultasi-submit" type="submit"
+                            class="w-full bg-blue-900 hover:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-colors text-base shadow-sm flex items-center justify-center gap-2">
+                        <svg id="konsultasi-spinner" class="hidden w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span id="konsultasi-btn-text">Kirim & Konsultasi Gratis</span>
                     </button>
                     <p class="text-center text-gray-400 text-xs mt-3">
                         Dengan mengirim form ini, Anda setuju untuk dihubungi oleh tim VendoSmart.
@@ -557,6 +563,88 @@
                 }
             }
             window.addEventListener('scroll', toggleWaBtn, { passive: true });
+        })();
+
+        // Konsultasi form — AJAX submit dengan loading state
+        (function () {
+            const form        = document.getElementById('konsultasi-form');
+            const submitBtn   = document.getElementById('konsultasi-submit');
+            const spinner     = document.getElementById('konsultasi-spinner');
+            const btnText     = document.getElementById('konsultasi-btn-text');
+            const successDiv  = document.getElementById('konsultasi-success');
+            const errorDiv    = document.getElementById('konsultasi-error');
+            const errorMsg    = document.getElementById('konsultasi-error-msg');
+            const fieldKeys   = ['name', 'whatsapp', 'email', 'need'];
+
+            function setLoading(on) {
+                submitBtn.disabled = on;
+                spinner.classList.toggle('hidden', !on);
+                btnText.textContent = on ? 'Mengirim...' : 'Kirim & Konsultasi Gratis';
+            }
+
+            function clearFieldErrors() {
+                fieldKeys.forEach(key => {
+                    const errEl   = document.getElementById('error-' + key);
+                    const fieldEl = document.getElementById('field-' + key);
+                    if (errEl)   { errEl.textContent = ''; errEl.classList.add('hidden'); }
+                    if (fieldEl) { fieldEl.classList.remove('border-red-400', 'bg-red-50'); fieldEl.classList.add('border-gray-200'); }
+                });
+            }
+
+            function showFieldErrors(errors) {
+                Object.entries(errors).forEach(([key, messages]) => {
+                    const errEl   = document.getElementById('error-' + key);
+                    const fieldEl = document.getElementById('field-' + key);
+                    if (errEl)   { errEl.textContent = messages[0]; errEl.classList.remove('hidden'); }
+                    if (fieldEl) { fieldEl.classList.add('border-red-400', 'bg-red-50'); fieldEl.classList.remove('border-gray-200'); }
+                });
+            }
+
+            function showSuccess() {
+                successDiv.classList.remove('hidden');
+                successDiv.classList.add('flex');
+                errorDiv.classList.add('hidden');
+                errorDiv.classList.remove('flex');
+                form.reset();
+                successDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            function showGeneralError(msg) {
+                errorDiv.classList.remove('hidden');
+                errorDiv.classList.add('flex');
+                errorMsg.textContent = msg || 'Silakan coba lagi.';
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                setLoading(true);
+                clearFieldErrors();
+                errorDiv.classList.add('hidden');
+                errorDiv.classList.remove('flex');
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json' },
+                        body: new FormData(form),
+                    });
+
+                    if (res.ok) {
+                        showSuccess();
+                    } else if (res.status === 422) {
+                        const data = await res.json();
+                        showFieldErrors(data.errors);
+                    } else if (res.status === 429) {
+                        showGeneralError('Terlalu banyak percobaan. Silakan tunggu sebentar.');
+                    } else {
+                        showGeneralError('Terjadi kesalahan server. Silakan coba lagi.');
+                    }
+                } catch {
+                    showGeneralError('Koneksi bermasalah. Periksa koneksi internet Anda.');
+                } finally {
+                    setLoading(false);
+                }
+            });
         })();
     </script>
 </body>
